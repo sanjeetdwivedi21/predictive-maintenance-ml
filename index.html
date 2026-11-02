@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Machine Health Monitor | Predictive Maintenance</title>
+<style>
+:root{color-scheme:dark;--bg:#080d17;--panel:#101a2a;--line:#26364b;--text:#e8eef8;--muted:#9aabc2;--amber:#f5b544;--green:#31d49a;--red:#ff657a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#17253a 0,#080d17 55%);font:16px/1.5 Inter,system-ui,sans-serif;color:var(--text)}
+main{max-width:1100px;margin:auto;padding:32px 18px 60px}.hero{padding:28px;border:1px solid #3a4351;border-radius:20px;background:linear-gradient(130deg,#17263a,#111827 65%,#292015);margin-bottom:20px}
+.kicker{color:var(--amber);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.75rem}.hero h1{font-size:clamp(2rem,5vw,3.3rem);line-height:1.08;margin:10px 0}.hero p{color:var(--muted);max-width:700px;margin:0}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.panel{background:#0e1725eF;border:1px solid var(--line);border-radius:18px;padding:22px}.panel h2{margin:0 0 18px;font-size:1.2rem}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:grid;gap:7px;color:var(--muted);font-size:.88rem}input,select{width:100%;background:#09111d;color:var(--text);border:1px solid #33445b;border-radius:10px;padding:12px;font:inherit}button{grid-column:1/-1;border:0;border-radius:11px;padding:14px;background:var(--amber);color:#17120a;font-weight:800;font:inherit;cursor:pointer}button:disabled{opacity:.6;cursor:wait}.result{display:grid;align-content:start;gap:14px}.risk{font-size:4rem;font-weight:850;letter-spacing:-.06em;line-height:1}.meter{height:10px;background:#263247;border-radius:99px;overflow:hidden}.meter span{display:block;height:100%;width:0;background:var(--green);transition:width .3s}.badge{display:inline-flex;border-radius:99px;padding:5px 10px;font-size:.8rem;font-weight:800;background:#14372e;color:var(--green)}.badge.alert{background:#421d29;color:var(--red)}.muted{color:var(--muted)}.cause{border-top:1px solid var(--line);padding-top:14px}.error{color:var(--red);min-height:1.5em}.footer{color:var(--muted);font-size:.8rem;margin-top:20px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}form{grid-template-columns:1fr}.panel{padding:18px}}
+</style>
+</head>
+<body><main>
+<header class="hero"><div class="kicker">Industrial AI · Predictive maintenance</div><h1>Machine Health Monitor</h1><p>Estimate machine failure risk from operating conditions and get an early maintenance signal. Demonstration model trained on the public AI4I 2020 benchmark—not live factory telemetry.</p></header>
+<div class="layout">
+<section class="panel"><h2>Machine operating conditions</h2>
+<form id="form">
+<label>Product quality type<select name="quality_type"><option value="L">L — Low</option><option value="M" selected>M — Medium</option><option value="H">H — High</option></select></label>
+<label>Air temperature (K)<input name="air_temperature" type="number" value="298" min="250" max="350" step=".1" required></label>
+<label>Process temperature (K)<input name="process_temperature" type="number" value="308.6" min="250" max="350" step=".1" required></label>
+<label>Rotational speed (rpm)<input name="rotational_speed" type="number" value="1500" min="1" max="10000" step="1" required></label>
+<label>Torque (Nm)<input name="torque" type="number" value="40" min="0" max="200" step=".1" required></label>
+<label>Tool wear (minutes)<input name="tool_wear" type="number" value="30" min="0" max="1000" step="1" required></label>
+<button id="submit" type="submit">Analyze machine</button></form><p class="error" id="error" role="status"></p></section>
+<section class="panel result"><h2>Prediction result</h2><span class="badge" id="badge">Ready for analysis</span><div class="risk" id="risk">—<span style="font-size:1.4rem">%</span></div><div class="meter"><span id="meter"></span></div><div class="muted" id="threshold">Enter machine readings and run an analysis.</div><div class="cause"><strong>Likely failure cause</strong><p id="cause" class="muted">No diagnosis yet.</p></div><div class="cause"><strong>Recommended next step</strong><p id="action" class="muted">Use the prediction as a screening signal and follow your plant's maintenance procedures.</p></div></section>
+</div><p class="footer">Prototype for demonstration and decision support. Validate on plant-specific data before operational use.</p>
+</main>
+<script>
+const form=document.querySelector("#form"), submit=document.querySelector("#submit");
+form.addEventListener("submit",async e=>{e.preventDefault();submit.disabled=true;submit.textContent="Analyzing…";document.querySelector("#error").textContent="";
+try{const fd=new FormData(form),payload={};for(const [k,v] of fd.entries())payload[k]=k==="quality_type"?v:Number(v);
+const r=await fetch("/api/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+const data=await r.json();if(!r.ok)throw new Error(data.detail||"Prediction request failed");
+const alert=data.status==="alert";document.querySelector("#badge").textContent=alert?"Maintenance alert":"Machine appears healthy";document.querySelector("#badge").className="badge"+(alert?" alert":"");
+document.querySelector("#risk").innerHTML=`${data.risk_percent}<span style="font-size:1.4rem">%</span>`;document.querySelector("#meter").style.width=`${data.risk_percent}%`;document.querySelector("#meter").style.background=alert?"var(--red)":"var(--green)";
+document.querySelector("#threshold").textContent=`Alert threshold: ${data.threshold_percent}%`;document.querySelector("#cause").textContent=data.likely_cause?`${data.likely_cause} (${data.diagnosis_confidence_percent}% relative diagnosis confidence)`:"No dominant failure type identified.";
+document.querySelector("#action").textContent=alert?"Inspect the indicated subsystem and schedule maintenance according to plant procedures.":"Continue routine monitoring; this result does not guarantee that failure will not occur.";
+}catch(err){document.querySelector("#error").textContent=err.message; }finally{submit.disabled=false;submit.textContent="Analyze machine";}});
+</script></body></html>
