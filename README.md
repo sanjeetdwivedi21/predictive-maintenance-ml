@@ -1,18 +1,15 @@
-# Predictive Maintenance ML — Vercel
+# Machine Health Monitor (Vercel)
 
-## Required model artifacts
-Place these files in the repository root before deploying:
-- `pm_meta.joblib`
-- `pm_xgb.json`
+Predictive maintenance demo. A single page (`index.html`) plus two tiny Python functions.
 
-The metadata artifact must contain `features`, `types`, `threshold`, and `type_model`, as expected by the original app.
+- `POST /api/predict`: failure risk, likely cause and sensor notes for one machine
+- `GET  /api/health`: health check
+- `fleet.json`: precomputed fleet simulation (risk scores from the trained model)
+- `lib/`: pure-Python inference (no numpy, xgboost or scikit-learn), model in `lib/model_lite.json` (1.7 MB)
+- `tools/convert_model.py`: how `model_lite.json` was made from the original XGBoost + random-forest files
 
-## Deploy
-1. Commit and push this project to GitHub.
-2. Import the repository in Vercel.
-3. Framework Preset: Other; Root Directory: `./`.
-4. Leave build/output/install overrides disabled and deploy.
+There is deliberately **no requirements.txt**: the functions need no third-party packages, so the
+deployment is a few MB instead of hundreds.
 
-The frontend is `index.html`; the Python API is `api/index.py`. The endpoint is `POST /api/predict`; health check is `GET /api/health`.
-
-This is a demonstration model trained on AI4I 2020 benchmark data, not a validated industrial safety system.
+Data: public AI4I 2020 benchmark (synthetic). Cross-validated recall 84.7%, precision 73.2%.
+Not a validated industrial safety system.

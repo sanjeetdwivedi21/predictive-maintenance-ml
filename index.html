@@ -4,39 +4,145 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Machine Health Monitor | Predictive Maintenance</title>
 <style>
-:root{color-scheme:dark;--bg:#080d17;--panel:#101a2a;--line:#26364b;--text:#e8eef8;--muted:#9aabc2;--amber:#f5b544;--green:#31d49a;--red:#ff657a}
+:root{color-scheme:dark;--bg:#080d17;--panel:#101a2a;--line:#26364b;--text:#e8eef8;--muted:#9aabc2;--amber:#f5b544;--green:#31d49a;--red:#ff657a;--blue:#5b9dff}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#17253a 0,#080d17 55%);font:16px/1.5 Inter,system-ui,sans-serif;color:var(--text)}
-main{max-width:1100px;margin:auto;padding:32px 18px 60px}.hero{padding:28px;border:1px solid #3a4351;border-radius:20px;background:linear-gradient(130deg,#17263a,#111827 65%,#292015);margin-bottom:20px}
-.kicker{color:var(--amber);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.75rem}.hero h1{font-size:clamp(2rem,5vw,3.3rem);line-height:1.08;margin:10px 0}.hero p{color:var(--muted);max-width:700px;margin:0}
-.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.panel{background:#0e1725eF;border:1px solid var(--line);border-radius:18px;padding:22px}.panel h2{margin:0 0 18px;font-size:1.2rem}
-form{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:grid;gap:7px;color:var(--muted);font-size:.88rem}input,select{width:100%;background:#09111d;color:var(--text);border:1px solid #33445b;border-radius:10px;padding:12px;font:inherit}button{grid-column:1/-1;border:0;border-radius:11px;padding:14px;background:var(--amber);color:#17120a;font-weight:800;font:inherit;cursor:pointer}button:disabled{opacity:.6;cursor:wait}.result{display:grid;align-content:start;gap:14px}.risk{font-size:4rem;font-weight:850;letter-spacing:-.06em;line-height:1}.meter{height:10px;background:#263247;border-radius:99px;overflow:hidden}.meter span{display:block;height:100%;width:0;background:var(--green);transition:width .3s}.badge{display:inline-flex;border-radius:99px;padding:5px 10px;font-size:.8rem;font-weight:800;background:#14372e;color:var(--green)}.badge.alert{background:#421d29;color:var(--red)}.muted{color:var(--muted)}.cause{border-top:1px solid var(--line);padding-top:14px}.error{color:var(--red);min-height:1.5em}.footer{color:var(--muted);font-size:.8rem;margin-top:20px}
-@media(max-width:760px){.layout{grid-template-columns:1fr}form{grid-template-columns:1fr}.panel{padding:18px}}
+main{max-width:1100px;margin:auto;padding:32px 18px 60px}
+.hero{padding:28px;border:1px solid #3a4351;border-radius:20px;background:linear-gradient(130deg,#17263a,#111827 65%,#292015);margin-bottom:20px}
+.kicker{color:var(--amber);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:.75rem}
+.hero h1{font-size:clamp(2rem,5vw,3.3rem);line-height:1.08;margin:10px 0}.hero p{color:var(--muted);max-width:720px;margin:0}
+.layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.panel{background:#0e1725ef;border:1px solid var(--line);border-radius:18px;padding:22px}.panel h2{margin:0 0 6px;font-size:1.2rem}
+.sub{color:var(--muted);font-size:.92rem;margin:0 0 16px}
+form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+label{display:grid;gap:7px;color:var(--muted);font-size:.88rem}
+input,select{width:100%;background:#09111d;color:var(--text);border:1px solid #33445b;border-radius:10px;padding:12px;font:inherit}
+button{border:0;border-radius:11px;padding:14px;background:var(--amber);color:#17120a;font-weight:800;font:inherit;font-weight:800;cursor:pointer}
+button:disabled{opacity:.6;cursor:wait}form button,.wide{grid-column:1/-1}
+.result{display:grid;align-content:start;gap:12px}
+.risk{font-size:4rem;font-weight:850;letter-spacing:-.06em;line-height:1}
+.meter{height:10px;background:#263247;border-radius:99px;overflow:hidden}.meter span{display:block;height:100%;width:0;background:var(--green);transition:width .3s}
+.badge{display:inline-flex;width:max-content;border-radius:99px;padding:5px 10px;font-size:.8rem;font-weight:800;background:#14372e;color:var(--green)}
+.badge.alert{background:#421d29;color:var(--red)}
+.muted{color:var(--muted)}.cause{border-top:1px solid var(--line);padding-top:12px}.cause p{margin:6px 0 0}
+.error{color:var(--red);min-height:1.5em;grid-column:1/-1;margin:0}
+.bars{display:grid;gap:6px;margin-top:8px}.bar{display:grid;grid-template-columns:120px 1fr 38px;gap:8px;align-items:center;font-size:.85rem;color:var(--muted)}
+.bar i{display:block;height:8px;border-radius:9px;background:#263247;overflow:hidden}.bar i b{display:block;height:100%;background:var(--amber)}
+ul.notes{margin:6px 0 0;padding-left:18px;color:var(--muted)}ul.notes li{margin:3px 0}
+.section{margin-top:22px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end;margin-bottom:14px}.controls label{min-width:230px;flex:1}.controls button{min-width:180px}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 12px}
+.pill{padding:6px 14px;border-radius:999px;font-weight:600;font-size:.9rem;border:1px solid #33445b}
+.pill.ok{background:#14372e66}.pill.watch{background:#4a361366}.pill.alert{background:#421d2977}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.tile{border-radius:12px;padding:12px 14px;border:1px solid #33445b;border-left-width:5px}
+.tile.ok{border-left-color:var(--green);background:#14372e33}.tile.watch{border-left-color:var(--amber);background:#4a361355}
+.tile.alert{border-left-color:var(--red);background:#421d2966}.tile.idle{border-left-color:#64748b;background:#64748b14}
+.tile-top{display:flex;justify-content:space-between;gap:6px;align-items:baseline}.tile-name{font-weight:700}.tile-id{color:var(--muted);font-size:.78rem}
+.tile-risk{font-size:1.8rem;font-weight:800;line-height:1.15}.tile-risk small{font-size:.8rem;font-weight:500;color:var(--muted)}
+.hbar{height:6px;border-radius:4px;background:#263247;overflow:hidden;margin:6px 0}.hbar b{display:block;height:100%}
+.spark{width:100%;height:26px;display:block}.tile-foot{font-size:.82rem;min-height:1.3em;margin-top:4px}
+.wo{border-radius:12px;padding:12px 16px;margin:8px 0;border:1px solid #33445b;border-left-width:5px}
+.wo.critical{border-left-color:var(--red);background:#421d2933}.wo.high{border-left-color:var(--amber);background:#4a361333}.wo.medium{border-left-color:var(--blue);background:#1e3a6633}
+.wo-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}.wo-body{color:#cbd6e6;font-size:.93rem;line-height:1.6}
+.chip{padding:2px 10px;border-radius:999px;font-size:.78rem;font-weight:800}.chip.critical{background:#ff657a44}.chip.high{background:#f5b54444}.chip.medium{background:#5b9dff44}
+.dl{display:none;margin-top:10px;background:#1b2a40;color:var(--text);border:1px solid #33445b;width:max-content;padding:10px 16px}
+.footer{color:var(--muted);font-size:.8rem;margin-top:24px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}form{grid-template-columns:1fr}.panel{padding:18px}.bar{grid-template-columns:100px 1fr 38px}}
 </style>
 </head>
 <body><main>
-<header class="hero"><div class="kicker">Industrial AI · Predictive maintenance</div><h1>Machine Health Monitor</h1><p>Estimate machine failure risk from operating conditions and get an early maintenance signal. Demonstration model trained on the public AI4I 2020 benchmark—not live factory telemetry.</p></header>
+<header class="hero"><div class="kicker">Industrial AI · Predictive maintenance</div><h1>Machine Health Monitor</h1>
+<p>Reads machine sensors and warns the maintenance team before a breakdown stops the line. Demonstration model trained on the public AI4I 2020 benchmark, not live factory telemetry.</p></header>
+
 <div class="layout">
-<section class="panel"><h2>Machine operating conditions</h2>
+<section class="panel"><h2>Check one machine</h2><p class="sub">Pick an example or type your own readings.</p>
 <form id="form">
-<label>Product quality type<select name="quality_type"><option value="L">L — Low</option><option value="M" selected>M — Medium</option><option value="H">H — High</option></select></label>
+<label class="wide">Start from an example<select id="preset"></select></label>
+<label>Product quality type<select name="quality_type"><option value="L">L, low</option><option value="M" selected>M, medium</option><option value="H">H, high</option></select></label>
 <label>Air temperature (K)<input name="air_temperature" type="number" value="298" min="250" max="350" step=".1" required></label>
 <label>Process temperature (K)<input name="process_temperature" type="number" value="308.6" min="250" max="350" step=".1" required></label>
 <label>Rotational speed (rpm)<input name="rotational_speed" type="number" value="1500" min="1" max="10000" step="1" required></label>
 <label>Torque (Nm)<input name="torque" type="number" value="40" min="0" max="200" step=".1" required></label>
 <label>Tool wear (minutes)<input name="tool_wear" type="number" value="30" min="0" max="1000" step="1" required></label>
-<button id="submit" type="submit">Analyze machine</button></form><p class="error" id="error" role="status"></p></section>
-<section class="panel result"><h2>Prediction result</h2><span class="badge" id="badge">Ready for analysis</span><div class="risk" id="risk">—<span style="font-size:1.4rem">%</span></div><div class="meter"><span id="meter"></span></div><div class="muted" id="threshold">Enter machine readings and run an analysis.</div><div class="cause"><strong>Likely failure cause</strong><p id="cause" class="muted">No diagnosis yet.</p></div><div class="cause"><strong>Recommended next step</strong><p id="action" class="muted">Use the prediction as a screening signal and follow your plant's maintenance procedures.</p></div></section>
-</div><p class="footer">Prototype for demonstration and decision support. Validate on plant-specific data before operational use.</p>
+<button id="submit" type="submit">Analyze machine</button><p class="error" id="error" role="status"></p></form></section>
+
+<section class="panel result"><h2>Prediction result</h2><span class="badge" id="badge">Ready for analysis</span>
+<div class="risk" id="risk">—<span style="font-size:1.4rem">%</span></div><div class="meter"><span id="meter"></span></div>
+<div class="muted" id="threshold">Enter machine readings and run an analysis.</div>
+<div class="cause"><strong>Likely failure cause</strong><p id="cause" class="muted">No diagnosis yet.</p><div class="bars" id="bars"></div></div>
+<div class="cause"><strong>What the sensors say</strong><ul class="notes" id="notes"><li>Run an analysis to see this.</li></ul></div>
+<div class="cause"><strong>Recommended next step</strong><p id="action" class="muted">Use the prediction as a screening signal and follow your plant's maintenance procedures.</p></div></section>
+</div>
+
+<section class="panel section"><h2>Live fleet: ten machines on one shop floor</h2>
+<p class="sub">Press start. Faults creep in on some machines, and the system raises an alert and writes a work order before they fail. One step is one simulated operating hour. The readings are simulated; the risk scores come from the trained model.</p>
+<div class="controls"><label>Seconds per simulated hour<input id="speed" type="range" min="0.03" max="0.4" step="0.01" value="0.1"></label><button id="start" type="button">Start the shift</button></div>
+<div id="fleet"></div><h2 style="margin-top:18px">Work orders</h2><div id="orders"></div><button class="dl" id="dl" type="button">Download work orders (CSV)</button></section>
+
+<p class="footer">Prototype for demonstration and decision support. Validate on plant-specific data before operational use. Cross-validated on AI4I 2020: recall 84.7%, precision 73.2%.</p>
 </main>
 <script>
-const form=document.querySelector("#form"), submit=document.querySelector("#submit");
-form.addEventListener("submit",async e=>{e.preventDefault();submit.disabled=true;submit.textContent="Analyzing…";document.querySelector("#error").textContent="";
-try{const fd=new FormData(form),payload={};for(const [k,v] of fd.entries())payload[k]=k==="quality_type"?v:Number(v);
+const $=s=>document.querySelector(s), INR=n=>"₹"+Number(n).toLocaleString("en-IN");
+const PRESETS={
+ "Running normally":["M",298,308.6,1500,40,30],
+ "Cooling problem":["M",302,310.2,1300,45,50],
+ "Overloaded":["L",298,308.5,1400,70,80],
+ "Heavy strain":["L",298,308.6,1450,55,230],
+ "Worn tool, heavy cut":["M",298,308.6,1500,55,235]};
+const FIELDS=["quality_type","air_temperature","process_temperature","rotational_speed","torque","tool_wear"];
+const form=$("#form"), submit=$("#submit"), preset=$("#preset");
+for(const k of Object.keys(PRESETS)) preset.add(new Option(k,k));
+preset.addEventListener("change",()=>{PRESETS[preset.value].forEach((v,i)=>form.elements[FIELDS[i]].value=v);form.requestSubmit();});
+
+form.addEventListener("submit",async e=>{e.preventDefault();submit.disabled=true;submit.textContent="Analyzing…";$("#error").textContent="";
+try{const payload={};for(const [k,v] of new FormData(form).entries())payload[k]=k==="quality_type"?v:Number(v);
 const r=await fetch("/api/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
 const data=await r.json();if(!r.ok)throw new Error(data.detail||"Prediction request failed");
-const alert=data.status==="alert";document.querySelector("#badge").textContent=alert?"Maintenance alert":"Machine appears healthy";document.querySelector("#badge").className="badge"+(alert?" alert":"");
-document.querySelector("#risk").innerHTML=`${data.risk_percent}<span style="font-size:1.4rem">%</span>`;document.querySelector("#meter").style.width=`${data.risk_percent}%`;document.querySelector("#meter").style.background=alert?"var(--red)":"var(--green)";
-document.querySelector("#threshold").textContent=`Alert threshold: ${data.threshold_percent}%`;document.querySelector("#cause").textContent=data.likely_cause?`${data.likely_cause} (${data.diagnosis_confidence_percent}% relative diagnosis confidence)`:"No dominant failure type identified.";
-document.querySelector("#action").textContent=alert?"Inspect the indicated subsystem and schedule maintenance according to plant procedures.":"Continue routine monitoring; this result does not guarantee that failure will not occur.";
-}catch(err){document.querySelector("#error").textContent=err.message; }finally{submit.disabled=false;submit.textContent="Analyze machine";}});
+const alert=data.status==="alert";
+$("#badge").textContent=alert?"Maintenance alert":"Machine appears healthy";$("#badge").className="badge"+(alert?" alert":"");
+$("#risk").innerHTML=`${data.risk_percent}<span style="font-size:1.4rem">%</span>`;
+$("#meter").style.width=`${data.risk_percent}%`;$("#meter").style.background=alert?"var(--red)":"var(--green)";
+$("#threshold").textContent=`Alert threshold: ${data.threshold_percent}%`;
+$("#cause").textContent=alert?`${data.likely_cause} (${data.diagnosis_confidence_percent}% diagnosis confidence)`:"No failure expected, so no cause to report.";
+$("#bars").innerHTML=alert?data.causes.map(c=>`<div class="bar"><span>${c.name}</span><i><b style="width:${c.percent}%"></b></i><span>${c.percent}%</span></div>`).join(""):"";
+$("#notes").innerHTML=data.notes.map(n=>`<li>${n}</li>`).join("");
+$("#action").textContent=alert?"Inspect the indicated subsystem and schedule maintenance according to plant procedures.":"Continue routine monitoring; this result does not guarantee that failure will not occur.";
+}catch(err){$("#error").textContent=err.message}finally{submit.disabled=false;submit.textContent="Analyze machine"}});
+
+/* ---------------- fleet ---------------- */
+const COST_UNPLANNED=200000, COST_PLANNED=40000;
+const ACTIONS={
+ TWF:{n:"Tool wear",a:"Replace the cutting tool",d:"Swap the tool at the next planned stop and reset the wear counter.",p:"Cutting tool or insert"},
+ HDF:{n:"Heat dissipation",a:"Inspect the cooling system",d:"Check coolant flow and the fan, and clear any blocked heat-exchanger passages.",p:"Coolant pump, fan, heat exchanger"},
+ PWF:{n:"Power",a:"Check motor load and power supply",d:"Reduce the feed rate, then inspect the motor, the drive and the supply.",p:"Motor, drive, supply cables"},
+ OSF:{n:"Overstrain",a:"Reduce the load and inspect the tool holder",d:"Lower the cutting load and check the clamping and the tool condition.",p:"Tool holder, clamps"}};
+let FLEET=null, timer=null, orders=[];
+const stateOf=(m,t)=>{const ps=m.risk[t];if(m.alert!==null&&t>=m.alert)return"alert";return ps>=FLEET.threshold*.4?"watch":"ok"};
+function spark(vals,color){const w=100,h=26,last=FLEET.steps-1;
+ const pts=vals.map((v,i)=>`${(i/last*w).toFixed(1)},${(h-2-Math.min(v,1)*(h-4)).toFixed(1)}`).join(" ");
+ const ty=(h-2-FLEET.threshold*(h-4)).toFixed(1);
+ return `<svg viewBox="0 0 ${w} ${h}" class="spark" preserveAspectRatio="none"><line x1="0" x2="${w}" y1="${ty}" y2="${ty}" stroke="#f5b544" stroke-dasharray="3 3" stroke-width="1" opacity=".7" vector-effect="non-scaling-stroke"/><polyline fill="none" stroke="${color}" stroke-width="1.8" points="${pts}" vector-effect="non-scaling-stroke"/></svg>`}
+function tile(m,t){const head=`<div class="tile-top"><span class="tile-name">${m.name}</span><span class="tile-id">${m.id} · type ${m.q}</span></div>`;
+ if(t<0)return `<div class="tile idle">${head}<div class="tile-risk">--</div><div class="hbar"><b style="width:0"></b></div><div class="tile-foot">Waiting to start</div></div>`;
+ const k=stateOf(m,t),ps=m.risk[t],col={alert:"#ff657a",watch:"#f5b544",ok:"#31d49a"}[k];
+ const foot=k==="alert"?`<b>${ACTIONS[m.cause].n}</b> · alert since hour ${m.alert+1}`:k==="watch"?"Risk is climbing":"Normal operation";
+ return `<div class="tile ${k}">${head}<div class="tile-risk">${Math.round(ps*100)}%<small> risk</small></div><div class="hbar"><b style="width:${Math.max(0,1-ps)*100}%;background:${col}"></b></div>${spark(m.risk.slice(0,t+1),col)}<div class="tile-foot">${foot}</div></div>`}
+function renderFleet(t){const c={ok:0,watch:0,alert:0};if(t>=0)FLEET.machines.forEach(m=>c[stateOf(m,t)]++);
+ const pills=t<0?`<span class="pill">Shift not started</span><span class="pill">${FLEET.machines.length} machines connected</span>`
+ :`<span class="pill">Hour ${t+1} of ${FLEET.steps}</span><span class="pill ok">${c.ok} healthy</span><span class="pill watch">${c.watch} watch</span><span class="pill alert">${c.alert} alert</span><span class="pill">Up to ${INR(orders.length*(COST_UNPLANNED-COST_PLANNED))} saved if every alert is acted on</span>`;
+ $("#fleet").innerHTML=`<div class="pills">${pills}</div><div class="grid">${FLEET.machines.map(m=>tile(m,t)).join("")}</div>`}
+function makeOrder(m,t){const lead=FLEET.steps-1-m.alert,a=ACTIONS[m.cause];
+ return {id:"WO-"+(1001+orders.length),mid:m.id,machine:m.name,hour:m.alert+1,lead,prio:lead<=15?"Critical":lead<=35?"High":"Medium",cause:a.n,conf:Math.round(m.conf*100),action:a.a,detail:a.d,parts:a.p,saving:COST_UNPLANNED-COST_PLANNED}}
+function renderOrders(){$("#orders").innerHTML=orders.length?[...orders].reverse().map(o=>{const p=o.prio.toLowerCase();
+ return `<div class="wo ${p}"><div class="wo-head"><span><b>${o.id}</b> &nbsp;${o.mid} · ${o.machine}</span><span class="chip ${p}">${o.prio}</span></div><div class="wo-body"><b>${o.action}.</b> ${o.detail}<br>Likely cause: ${o.cause.toLowerCase()} (diagnosis confidence ${o.conf}%) · raised at hour ${o.hour} · about ${o.lead} h of warning<br>Parts to check: ${o.parts}<br>A planned fix costs ${INR(COST_PLANNED)}, an unplanned stop ${INR(COST_UNPLANNED)}. That is up to <b>${INR(o.saving)}</b> saved.</div></div>`}).join("")
+ :`<div class="wo medium"><div class="wo-body"><b>No work orders yet.</b> The system raises one automatically when a machine crosses the alert line.</div></div>`}
+function downloadCsv(){const head=["order_id","machine_id","machine","raised_at_hour","priority","likely_cause","diagnosis_confidence_pct","recommended_action","parts_to_check","hours_of_warning","planned_cost_inr","unplanned_cost_inr","potential_saving_inr"];
+ const rows=orders.map(o=>[o.id,o.mid,o.machine,o.hour,o.prio,o.cause,o.conf,o.action,o.parts,o.lead,COST_PLANNED,COST_UNPLANNED,o.saving].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(","));
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([[head.join(","),...rows].join("\n")],{type:"text/csv"}));a.download="work_orders.csv";a.click()}
+$("#dl").addEventListener("click",downloadCsv);
+$("#start").addEventListener("click",()=>{if(!FLEET)return;clearInterval(timer);orders=[];$("#dl").style.display="none";renderOrders();
+ const btn=$("#start");btn.disabled=true;let t=0;
+ timer=setInterval(()=>{FLEET.machines.forEach(m=>{if(m.alert===t)orders.push(makeOrder(m,t))});renderFleet(t);renderOrders();
+  if(++t>=FLEET.steps){clearInterval(timer);btn.disabled=false;btn.textContent="Run the shift again";if(orders.length)$("#dl").style.display="block"}},Number($("#speed").value)*1000)});
+fetch("/fleet.json").then(r=>r.json()).then(d=>{FLEET=d;renderFleet(-1);renderOrders()}).catch(()=>{$("#fleet").innerHTML='<p class="muted">Fleet data could not be loaded.</p>'});
 </script></body></html>

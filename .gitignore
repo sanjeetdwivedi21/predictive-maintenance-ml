@@ -1,9 +1,5 @@
-.venv/
-venv/
 __pycache__/
 *.pyc
-.ipynb_checkpoints/
-pm_clean.csv
-*.csv
-*.ipynb
-.git/
+.venv/
+venv/
+.vercel/
