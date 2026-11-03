@@ -1,5 +1,10 @@
+.venv/
 __pycache__/
 *.pyc
-.venv/
-venv/
-.vercel/
+.env
+requirements.txt
+app.py
+pm_model.joblib
+pm_meta.joblib
+pm_xgb.json
+pm_clean.csv
